@@ -35,6 +35,7 @@ public class JogosDaoImpl {
             registroLinhas.add(jogador);
             gravaJogos(registroLinhas.get(0));
         }
+
     }
 
     //Continua um jogo pendente do último usuario, até ele atingir 3 de vida
@@ -49,7 +50,7 @@ public class JogosDaoImpl {
     }
 
     //Zera o arquivo para um novo jogador
-    public void fimDeJogo(Jogos jogador){
+    public void fimDeJogo(){
         try {
             Files.newBufferedWriter(path , StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException e) {

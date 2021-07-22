@@ -48,6 +48,7 @@ public class JogosServiceImpl {
             jogador.setJogadas(jogador.getJogadas() + 1);
             jogador.setContador(jogador.getContador());
             jogosDao.atualizaJogo(jogador);
+            filmesDao.fimDaJogada();
             return "Você acertou, continue jogando.";
         } else {
             jogador.setLogin(login);
@@ -55,11 +56,13 @@ public class JogosServiceImpl {
             jogador.setContador(jogador.getContador() + 1);
             if (jogador.getContador() >= 3) {
                 jogosDao.atualizaJogo(jogador);
+                filmesDao.fimDaJogada();
                 rankingService.novoRanking(jogador);
-                jogosDao.fimDeJogo(jogador);
+                jogosDao.fimDeJogo();
                 return "O jogo acabou para você! Veja sua pontuação no Ranking";
             }
             jogosDao.atualizaJogo(jogador);
+            filmesDao.fimDaJogada();
             return "Errou mas continua vivo!";
         }
     }

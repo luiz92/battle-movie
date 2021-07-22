@@ -2,11 +2,15 @@ package battlemovies.dao;
 
 import battlemovies.modelo.Filmes;
 import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -20,6 +24,12 @@ public class FilmesDaoImpl {
     private String caminho2 = "src\\main\\java\\battlemovies\\files\\filmesTemp.csv";
     private List<Filmes> registroLinhas = new ArrayList<>();
     private Filmes filme1, filme2;
+    private Path path2;
+
+    @PostConstruct
+    public void init(){
+        path2 = Paths.get(caminho2);
+    }
 
     //Gera dois filmes random envia para o GET e envia os dados para o metodo filmesJogadaAtual();
     public List<Filmes> getBattleMovie(){
@@ -47,6 +57,15 @@ public class FilmesDaoImpl {
             e.printStackTrace();
         }
         return registroLinhas;
+    }
+
+    //Zera arquivo para evitar múltiplos jogos sem antes atualizar a "batalha"
+    public void fimDaJogada(){
+        try {
+            Files.newBufferedWriter(path2 , StandardOpenOption.TRUNCATE_EXISTING);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     //Transforma as linhas em Array para manipulação
