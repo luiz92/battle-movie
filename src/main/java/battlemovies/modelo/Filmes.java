@@ -13,6 +13,11 @@ public class Filmes {
     private Long votos;
     private Double rating;
 
+    public Filmes(String id, String nome){
+        this.id = id;
+        this.nome = nome;
+    }
+
     public Filmes(String txtLinhas) {
         String[] split = txtLinhas.split(",");
         this.id = split[0].trim().replace("\"", "");

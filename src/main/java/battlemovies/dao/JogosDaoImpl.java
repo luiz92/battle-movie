@@ -28,7 +28,7 @@ public class JogosDaoImpl {
 
     //Atualiza a cada jogada do usuario
     public void atualizaJogo(Jogos jogador){
-        linhaEmRanking();
+        linhaEmJogo();
         if(validaUsuario(jogador.getLogin())) {
             gravaJogos(jogador);
         } else {
@@ -39,7 +39,7 @@ public class JogosDaoImpl {
 
     //Continua um jogo pendente do último usuario, até ele atingir 3 de vida
     public Jogos continuaJogoPendente(String login){
-        linhaEmRanking();
+        linhaEmJogo();
         for (Jogos registroLinha : registroLinhas) {
             if (registroLinha.getLogin().equals(login)) {
                 return registroLinha;
@@ -58,7 +58,7 @@ public class JogosDaoImpl {
     }
 
     //Transforma as linhas em Array para manipulação
-    public void linhaEmRanking() {
+    public void linhaEmJogo() {
         try (Stream<String> streamLinhas = Files.lines(Path.of(caminho))) {
             registroLinhas = streamLinhas
                     .filter(Predicate.not(String::isEmpty))
@@ -71,7 +71,7 @@ public class JogosDaoImpl {
 
     //Valida se é um usuário novo
     public boolean validaUsuario(String login){
-        linhaEmRanking();
+        linhaEmJogo();
         for (Jogos registroLinha : registroLinhas) {
             if (registroLinha.getLogin().equals(login)) {
                 return true;

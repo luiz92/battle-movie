@@ -33,10 +33,6 @@ public class FilmesDaoImpl {
         gravaArquivo(filme1, filme2);
         battleMovie.add(filme1);
         battleMovie.add(filme2);
-//        filme1.setVotos(0L);
-//        filme1.setRating((double) 0);
-//        filme2.setVotos(0L);
-//        filme2.setRating((double) 0);
         return battleMovie;
     }
 

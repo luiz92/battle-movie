@@ -34,9 +34,11 @@ public class BattleMoviesController {
 
 //    GET >  http://localhost:8080/quizz
     @GetMapping()
-    public List exibirFilmes(){
-//        return filmesDao.getBattleMovie().removeIf(Rating, Votos);
-        return filmesDao.getBattleMovie();
+    public String exibirFilmes(){
+        var filme = filmesDao.getBattleMovie();
+        return "Pegue o ID e faça sua jogada do melhor filme! (Cálculo= Votos*Rating)\n" +
+                "\tID: "+filme.get(0).getId()+"\tFilme: "+filme.get(0).getNome()+"\n"+
+                "\tID: "+filme.get(1).getId()+"\tFilme: "+filme.get(1).getNome();
     }
 
     @GetMapping("/battle")
@@ -70,4 +72,5 @@ public class BattleMoviesController {
         }
         return "Dados incorretos!";
     }
+
 }
