@@ -77,4 +77,21 @@ public class JogosServiceImpl {
         }
         return false;
     }
+
+    //Envia texto padrão da batalha, exibindo os filmes
+    public String getTxtBattle(){
+        var filme = filmesDao.getBattleMovie();
+        return "Pegue o ID e faça sua jogada do melhor filme! (Cálculo= Votos*Rating)\n" +
+                "\tID: "+filme.get(0).getId()+"\tFilme: "+filme.get(0).getNome()+"\n"+
+                "\tID: "+filme.get(1).getId()+"\tFilme: "+filme.get(1).getNome();
+    }
+
+    //Informações do jogo
+    public String getTxtGameInfo(){
+        return "O jogo consiste em 2 filmes batalhando por suas reputações\n" +
+                "VOCÊ foi o escolhido para escolher quem é o melhor entre eles\n" +
+                "Nem tanto na verdade.. o quesito acerto/erro vai depender se você\n" +
+                "acertar qual entre eles tem a melhor média de pontos (votos * rating)\n" +
+                "Pense rápido e jogue! A reputação deles está em suas mãos :D";
+    }
 }

@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
-import java.util.Objects;
 
 @RequestMapping("/quizz")
 @RestController
@@ -35,22 +34,15 @@ public class BattleMoviesController {
 //    GET >  http://localhost:8080/quizz
     @GetMapping()
     public String exibirFilmes(){
-        var filme = filmesDao.getBattleMovie();
-        return "Pegue o ID e faça sua jogada do melhor filme! (Cálculo= Votos*Rating)\n" +
-                "\tID: "+filme.get(0).getId()+"\tFilme: "+filme.get(0).getNome()+"\n"+
-                "\tID: "+filme.get(1).getId()+"\tFilme: "+filme.get(1).getNome();
+        return jogosService.getTxtBattle();
     }
 
     @GetMapping("/battle")
     public String battle(){
-        return "O jogo consiste em 2 filmes batalhando por suas reputações\n" +
-                "VOCÊ foi o escolhido para escolher quem é o melhor entre eles\n" +
-                "Nem tanto na verdade.. o quesito acerto/erro vai depender se você\n" +
-                "acertar qual entre eles tem a melhor média de pontos (votos * rating)\n" +
-                "Pense rápido e jogue! A reputação deles está em suas mãos :D";
+        return jogosService.getTxtGameInfo();
     }
 
-//  GET >  http://localhost:8080/quizz/ranking
+    //  GET >  http://localhost:8080/quizz/ranking
     @GetMapping("/ranking")
     public List ranking(){
         return rankingDao.linhaEmRanking();
