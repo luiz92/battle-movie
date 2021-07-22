@@ -37,6 +37,7 @@ public class BattleMoviesController {
         return jogosService.getTxtBattle();
     }
 
+//    GET > http://localhost:8080/quizz/battle
     @GetMapping("/battle")
     public String battle(){
         return jogosService.getTxtGameInfo();
