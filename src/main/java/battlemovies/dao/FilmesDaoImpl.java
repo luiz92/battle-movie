@@ -2,13 +2,11 @@ package battlemovies.dao;
 
 import battlemovies.modelo.Filmes;
 import org.springframework.stereotype.Component;
-import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
@@ -20,24 +18,25 @@ import java.util.stream.Stream;
 public class FilmesDaoImpl {
     private String caminho = "src\\main\\java\\battlemovies\\files\\filmes.csv";
     private String caminho2 = "src\\main\\java\\battlemovies\\files\\filmesTemp.csv";
-    private Path path;
     private List<Filmes> registroLinhas = new ArrayList<>();
-
-    @PostConstruct
-    public void init(){
-        path = Paths.get(caminho);
-    }
+    private Filmes filme1, filme2;
 
     //Gera dois filmes random envia para o GET e envia os dados para o metodo filmesJogadaAtual();
-    public List getBattleMovie(){
+    public List<Filmes> getBattleMovie(){
         var filmes = getAll();
-        var battleMovie = new ArrayList();
+        ArrayList<Filmes> battleMovie = new ArrayList();
         Random random = new Random();
-        Filmes filme1 = filmes.get(random.nextInt(filmes.size()));
-        Filmes filme2 = filmes.get(random.nextInt(filmes.size()));
+        filme1 = filmes.get(random.nextInt(filmes.size()));
+        do {
+            filme2 = filmes.get(random.nextInt(filmes.size()));
+        }while (filme2 == filme1);
+        gravaArquivo(filme1, filme2);
         battleMovie.add(filme1);
         battleMovie.add(filme2);
-        gravaArquivo(filme1, filme2);
+//        filme1.setVotos(0L);
+//        filme1.setRating((double) 0);
+//        filme2.setVotos(0L);
+//        filme2.setRating((double) 0);
         return battleMovie;
     }
 
@@ -54,7 +53,8 @@ public class FilmesDaoImpl {
         return registroLinhas;
     }
 
-    public List linhaEmFilme() {
+    //Transforma as linhas em Array para manipulação
+    public void linhaEmFilme() {
         try (Stream<String> streamLinhas = Files.lines(Path.of(caminho))) {
             registroLinhas = streamLinhas
                     .filter(Predicate.not(String::isEmpty))
@@ -63,9 +63,9 @@ public class FilmesDaoImpl {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return registroLinhas;
     }
 
+    //Pega todos os filmes
     public List<Filmes> getAll() {
         linhaEmFilme();
         return registroLinhas;

@@ -27,21 +27,19 @@ public class JogosDaoImpl {
     }
 
     //Atualiza a cada jogada do usuario
-    public Jogos atualizaJogo(Jogos jogador){
-        atualizaListPontos();
+    public void atualizaJogo(Jogos jogador){
+        linhaEmRanking();
         if(validaUsuario(jogador.getLogin())) {
             gravaJogos(jogador);
-            return jogador;
         } else {
             registroLinhas.add(jogador);
             gravaJogos(registroLinhas.get(0));
-            return jogador;
         }
     }
 
-    //Continua um jogo pendente do usuario, até ele atingir 3 de vida
+    //Continua um jogo pendente do último usuario, até ele atingir 3 de vida
     public Jogos continuaJogoPendente(String login){
-        atualizaListPontos();
+        linhaEmRanking();
         for (Jogos registroLinha : registroLinhas) {
             if (registroLinha.getLogin().equals(login)) {
                 return registroLinha;
@@ -51,16 +49,16 @@ public class JogosDaoImpl {
     }
 
     //Zera o arquivo para um novo jogador
-    public Jogos fimDeJogo(Jogos jogador){
+    public void fimDeJogo(Jogos jogador){
         try {
             Files.newBufferedWriter(path , StandardOpenOption.TRUNCATE_EXISTING);
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return jogador;
     }
 
-    public List atualizaListPontos() {
+    //Transforma as linhas em Array para manipulação
+    public void linhaEmRanking() {
         try (Stream<String> streamLinhas = Files.lines(Path.of(caminho))) {
             registroLinhas = streamLinhas
                     .filter(Predicate.not(String::isEmpty))
@@ -69,11 +67,11 @@ public class JogosDaoImpl {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return registroLinhas;
     }
 
+    //Valida se é um usuário novo
     public boolean validaUsuario(String login){
-        atualizaListPontos();
+        linhaEmRanking();
         for (Jogos registroLinha : registroLinhas) {
             if (registroLinha.getLogin().equals(login)) {
                 return true;
@@ -82,15 +80,16 @@ public class JogosDaoImpl {
         return false;
     }
 
-    public Jogos gravaJogos(Jogos jogador){
+    //Grava o jogo atualizado
+    public void gravaJogos(Jogos jogador){
         try (BufferedWriter bf = Files.newBufferedWriter(path, StandardOpenOption.CREATE)) {
             bf.write(formatar(jogador));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return jogador;
     }
 
+    //Formato de gravação no arquivo
     public String formatar(Jogos jogador) {
         return String.format("%s,%d,%d\r\n",jogador.getLogin(),jogador.getContador(),jogador.getJogadas());
     }

@@ -4,44 +4,45 @@ import battlemovies.dao.FilmesDaoImpl;
 import battlemovies.dao.JogosDaoImpl;
 import battlemovies.modelo.Filmes;
 import battlemovies.modelo.Jogos;
-import lombok.Getter;
-import lombok.Setter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import java.util.List;
 
-@Getter
-@Setter
 @Component
 public class JogosServiceImpl {
-    List<Filmes> listaFilme;
+
+    List<Filmes> filmesDoJogo;
 
     @Autowired
+
     private FilmesDaoImpl filmesDao;
+
     @Autowired
     private JogosDaoImpl jogosDao;
+
     @Autowired
     private RankingServiceImpl rankingService;
 
     //Verifica o melhor filme calculando Rating * Votos
     public String validaMelhorFilme(String login, String id) {
-        listaFilme = filmesDao.filmesJogadaAtual();
+        filmesDoJogo = filmesDao.filmesJogadaAtual();
         Jogos jogador = new Jogos();
+        //Caso seja o último jogador que não finalizou suas jogadas
         if (jogosDao.continuaJogoPendente(login) != null){
             jogador = jogosDao.continuaJogoPendente(login);
         }
-        var pontuacaoFilme1 = listaFilme.get(0).getRating() * listaFilme.get(0).getVotos();
-        var pontuacaoFilme2 = listaFilme.get(1).getRating() * listaFilme.get(1).getVotos();
-        if (listaFilme.get(0).getId().equals(id) && jogador.getContador()!=3) {
-            return validaAcertoErro(login, jogador, pontuacaoFilme1, pontuacaoFilme2);
-        } else if (listaFilme.get(1).getId().equals(id) && jogador.getContador()!=3){
-            return validaAcertoErro(login, jogador, pontuacaoFilme2, pontuacaoFilme1);
+        var pontuacaoFilme1 = filmesDoJogo.get(0).getRating() * filmesDoJogo.get(0).getVotos();
+        var pontuacaoFilme2 = filmesDoJogo.get(1).getRating() * filmesDoJogo.get(1).getVotos();
+        if (filmesDoJogo.get(0).getId().equals(id) && jogador.getContador()!=3) {
+            return calculaAcertoErro(login, jogador, pontuacaoFilme1, pontuacaoFilme2);
+        } else if (filmesDoJogo.get(1).getId().equals(id) && jogador.getContador()!=3){
+            return calculaAcertoErro(login, jogador, pontuacaoFilme2, pontuacaoFilme1);
         }
         return null;
     }
 
-    //Verifica se o jogador acertou ou errou
-    private String validaAcertoErro(String login, Jogos jogador, double pontuacaoFilme1, double pontuacaoFilme2) {
+    //Verifica se o jogador acertou ou errou na sua escolha e realiza os calculos
+    private String calculaAcertoErro(String login, Jogos jogador, double pontuacaoFilme1, double pontuacaoFilme2) {
         if (pontuacaoFilme2 > pontuacaoFilme1) {
             jogador.setLogin(login);
             jogador.setJogadas(jogador.getJogadas() + 1);
@@ -65,8 +66,8 @@ public class JogosServiceImpl {
 
     //Verifica se o jogador entrou com ID correto
     public boolean validaID(String id) {
-        listaFilme = filmesDao.filmesJogadaAtual();
-        for (Filmes validaFilmeID : listaFilme) {
+        filmesDoJogo = filmesDao.filmesJogadaAtual();
+        for (Filmes validaFilmeID : filmesDoJogo) {
             if (validaFilmeID.getId().equals(id)) {
                 return true;
             }

@@ -24,7 +24,7 @@ public class UsuarioController {
 //  GET > http://localhost:8080/usuario/
     @GetMapping
     public String mensagem(){
-        return "Cadastre seu usuarios!";
+        return "Cadastre seu usuario!";
     }
 
 //  POST >  http://localhost:8080/usuario/
@@ -32,11 +32,7 @@ public class UsuarioController {
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
     public String getNovoUsuario(@RequestBody Usuario usuario) {
-        if(usuarioService.validarCriacao(usuario)){
-        usuarioDao.adicionar(usuario);
-            return "Criado com sucesso!";
-        }
-        return "Usuario ou Senha não atende os requisitos!\nNome deve conter 5/10 caracteres; senha deve conter 4/8 caracteres\nProibido uso de caracter especial e espaço em ambos.";
+        return usuarioService.criarUsuario(usuario);
     }
 
 }

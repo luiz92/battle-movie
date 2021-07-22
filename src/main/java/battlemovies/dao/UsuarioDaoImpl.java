@@ -30,16 +30,17 @@ public class UsuarioDaoImpl {
         path = Paths.get(caminho);
     }
 
-    public Usuario adicionar(Usuario usuario){
+    //Adiciona novo usuário
+    public void adicionar(Usuario usuario){
         try (BufferedWriter bf = Files.newBufferedWriter(path, StandardOpenOption.APPEND)) {
             bf.write(formatar(usuario));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return usuario;
     }
 
-    public List linhaEmUsuario() {
+    //Transforma as linhas em Array para manipulação
+    public void linhaEmUsuario() {
         try (Stream<String> streamLinhas = Files.lines(Path.of(caminho))) {
             registroLinhas = streamLinhas
                     .filter(Predicate.not(String::isEmpty))
@@ -48,14 +49,14 @@ public class UsuarioDaoImpl {
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return registroLinhas;
     }
 
+    //Formato de gravação no arquivo
     public String formatar(Usuario usuario) {
         return String.format("%s,%s\r\n",usuario.getNome(),cript(usuario.getSenha()));
     }
 
-    //criptografa senha
+    //Criptografa senha
     public String cript(String senha){
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("sha-1");
@@ -70,6 +71,7 @@ public class UsuarioDaoImpl {
         return null;
     }
 
+    //Pega todos os usuários
     public List<Usuario> getAll() {
         linhaEmUsuario();
         return registroLinhas;

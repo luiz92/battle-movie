@@ -27,15 +27,15 @@ public class RankingDaoImpl {
     }
 
     //Adiciona o jogador e a pontuação no final das vidas
-    public Ranking adicionar(Ranking jogo){
+    public void adicionar(Ranking jogo){
         try (BufferedWriter bf = Files.newBufferedWriter(path, StandardOpenOption.APPEND)) {
             bf.write(formatar(jogo));
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return jogo;
     }
 
+    //Transforma as linhas em Array para manipulação
     public List linhaEmRanking() {
         try (Stream<String> streamLinhas = Files.lines(Path.of(caminho))) {
             registroLinhas = streamLinhas
@@ -49,6 +49,7 @@ public class RankingDaoImpl {
         return registroLinhas;
     }
 
+    //Formato de gravação no arquivo
     public String formatar(Ranking ranking) {
         return String.format("%s,%d\r\n",ranking.getNome(),ranking.getPontuacao());
     }

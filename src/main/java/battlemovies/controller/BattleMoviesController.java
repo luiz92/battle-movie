@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
+import java.util.Objects;
 
 @RequestMapping("/quizz")
 @RestController
@@ -34,6 +35,7 @@ public class BattleMoviesController {
 //    GET >  http://localhost:8080/quizz
     @GetMapping()
     public List exibirFilmes(){
+//        return filmesDao.getBattleMovie().removeIf(Rating, Votos);
         return filmesDao.getBattleMovie();
     }
 
@@ -61,7 +63,7 @@ public class BattleMoviesController {
         String login = objectNode.get("nome").asText();
         String senha = objectNode.get("senha").asText();
         String id = objectNode.get("id").asText();
-        if(usuarioService.validaUsuario(login, senha)) {
+        if(usuarioService.verificaExistenciaUsuario(login, senha)) {
             if(jogosService.validaID(id)){
                     return jogosService.validaMelhorFilme(login, id);
             }
