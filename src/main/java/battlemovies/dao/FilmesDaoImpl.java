@@ -20,8 +20,8 @@ import java.util.stream.Stream;
 
 @Component
 public class FilmesDaoImpl {
-    private String caminho = "src\\main\\java\\battlemovies\\files\\filmes.csv";
-    private String caminho2 = "src\\main\\java\\battlemovies\\files\\filmesTemp.csv";
+    private String caminho = "src\\main\\resources\\files\\filmes.csv";
+    private String caminho2 = "src\\main\\resources\\files\\filmesTemp.csv";
     private List<Filmes> registroLinhas = new ArrayList<>();
     private Filmes filme1, filme2;
     private Path path2;

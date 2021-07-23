@@ -17,7 +17,7 @@ import java.util.stream.Stream;
 
 @Component
 public class RankingDaoImpl {
-    private String caminho = "src\\main\\java\\battlemovies\\files\\ranking.csv";
+    private String caminho = "src\\main\\resources\\files\\ranking.csv";
     private Path path;
     private List<Ranking> registroLinhas = new ArrayList<>();
 

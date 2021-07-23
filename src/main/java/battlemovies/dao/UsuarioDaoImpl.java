@@ -21,7 +21,7 @@ import java.util.stream.Stream;
 
 @Component
 public class UsuarioDaoImpl {
-    private String caminho = "src\\main\\java\\battlemovies\\files\\jogadores.csv";
+    private String caminho = "src\\main\\resources\\files\\jogadores.csv";
     private Path path;
     private List<Usuario> registroLinhas = new ArrayList<>();
 
