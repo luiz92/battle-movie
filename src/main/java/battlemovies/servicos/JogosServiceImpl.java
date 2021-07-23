@@ -31,8 +31,8 @@ public class JogosServiceImpl {
         if (jogosDao.continuaJogoPendente(login) != null){
             jogador = jogosDao.continuaJogoPendente(login);
         }
-        var pontuacaoFilme1 = filmesDoJogo.get(0).getRating() * filmesDoJogo.get(0).getVotos();
-        var pontuacaoFilme2 = filmesDoJogo.get(1).getRating() * filmesDoJogo.get(1).getVotos();
+        double pontuacaoFilme1 = filmesDoJogo.get(0).getRating() * filmesDoJogo.get(0).getVotos();
+        double pontuacaoFilme2 = filmesDoJogo.get(1).getRating() * filmesDoJogo.get(1).getVotos();
         if (filmesDoJogo.get(0).getId().equals(id) && jogador.getContador()!=3) {
             return calculaAcertoErro(login, jogador, pontuacaoFilme1, pontuacaoFilme2);
         } else if (filmesDoJogo.get(1).getId().equals(id) && jogador.getContador()!=3){
@@ -42,29 +42,35 @@ public class JogosServiceImpl {
     }
 
     //Verifica se o jogador acertou ou errou na sua escolha e realiza os calculos
-    private String calculaAcertoErro(String login, Jogos jogador, double pontuacaoFilme1, double pontuacaoFilme2) {
-        if (pontuacaoFilme2 > pontuacaoFilme1) {
+    private String calculaAcertoErro(String login, Jogos jogador, double escolhaDoJogador, double filme2) {
+        if (escolhaDoJogador > filme2) {
             jogador.setLogin(login);
             jogador.setJogadas(jogador.getJogadas() + 1);
             jogador.setContador(jogador.getContador());
             jogosDao.atualizaJogo(jogador);
             filmesDao.fimDaJogada();
-            return "Você acertou, continue jogando.";
+            return msgJogadaResult(escolhaDoJogador, filme2, "Parabéns! Você acertou!%n");
         } else {
             jogador.setLogin(login);
             jogador.setJogadas(jogador.getJogadas());
             jogador.setContador(jogador.getContador() + 1);
-            if (jogador.getContador() >= 3) {
-                jogosDao.atualizaJogo(jogador);
-                filmesDao.fimDaJogada();
-                rankingService.novoRanking(jogador);
-                jogosDao.fimDeJogo();
-                return "O jogo acabou para você! Veja sua pontuação no Ranking";
-            }
+                if (jogador.getContador() >= 3) {
+                    jogosDao.atualizaJogo(jogador);
+                    filmesDao.fimDaJogada();
+                    rankingService.novoRanking(jogador);
+                    jogosDao.fimDeJogo();
+                    return msgJogadaResult(escolhaDoJogador, filme2, "FIM de jogo para você! Acesse Ranking!%n");
+                }
             jogosDao.atualizaJogo(jogador);
             filmesDao.fimDaJogada();
-            return "Errou mas continua vivo!";
+            return msgJogadaResult(escolhaDoJogador, filme2, "Você errou.. mas continua vivo!%n");
         }
+    }
+
+    private String msgJogadaResult(double escolhaDoJogador, double filme2, String s) {
+        return String.format(s +
+                "O filme escolhido tem uma pontuação: %.0f %n" +
+                "O filme concorrente tem pontuação: %.0f", escolhaDoJogador, filme2);
     }
 
     //Verifica se o jogador entrou com ID correto
