@@ -13,7 +13,7 @@ public class Ranking {
 
     public Ranking(String txtLinhas) {
         String[] split = txtLinhas.split(",");
-        this.nome = split[0].trim().replace("\"", "");
-        this.pontuacao= Integer.parseInt(split[1].trim().replace("\"", ""));
+        this.nome = split[0];
+        this.pontuacao= Integer.parseInt(split[1]);
     }
 }

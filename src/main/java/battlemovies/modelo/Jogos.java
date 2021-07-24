@@ -14,9 +14,9 @@ public class Jogos {
 
     public Jogos(String txtLinhas) {
         String[] split = txtLinhas.split(",");
-        this.login = split[0].trim().replace("\"", "");
-        this.contador= Integer.parseInt(split[1].trim().replace("\"", ""));
-        this.jogadas = Integer.parseInt(split[2].trim().replace("\"", ""));
+        this.login = split[0];
+        this.contador= Integer.parseInt(split[1]);
+        this.jogadas = Integer.parseInt(split[2]);
 
     }
 }

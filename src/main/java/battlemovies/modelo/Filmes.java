@@ -20,9 +20,9 @@ public class Filmes {
 
     public Filmes(String txtLinhas) {
         String[] split = txtLinhas.split(",");
-        this.id = split[0].trim().replace("\"", "");
-        this.nome = split[1].trim().replace("\"", "");
-        this.votos= Long.parseLong(split[2].trim().replace("\"", ""));
-        this.rating= Double.parseDouble(split[3].trim().replace("\"", ""));
+        this.id = split[0];
+        this.nome = split[1];
+        this.votos= Long.parseLong(split[2]);
+        this.rating= Double.parseDouble(split[3].replace("\"", ""));
     }
 }

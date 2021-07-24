@@ -69,7 +69,7 @@ public class JogosServiceImpl {
 
     private String msgJogadaResult(double escolhaDoJogador, double filme2, String s) {
         return String.format(s +
-                "O filme escolhido tem uma pontuação: %.0f %n" +
+                "O filme escolhido tem pontuação    : %.0f %n" +
                 "O filme concorrente tem pontuação: %.0f", escolhaDoJogador, filme2);
     }
 
