@@ -43,7 +43,7 @@ public class BattleMoviesController {
         return jogosService.getTxtGameInfo();
     }
 
-    //  GET >  http://localhost:8080/quizz/ranking
+//    GET >  http://localhost:8080/quizz/ranking
     @GetMapping("/ranking")
     public List ranking(){
         return rankingDao.linhaEmRanking();
