@@ -1,7 +1,9 @@
 package battlemovies.dao;
 
+import battlemovies.exceptions.UsuarioIncorretoException;
 import battlemovies.modelo.Usuario;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Repository;
 import javax.annotation.PostConstruct;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -19,27 +21,25 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Component
+@Repository
 public class UsuarioDaoImpl {
-    private String caminho = "src\\main\\resources\\files\\jogadores.csv";
+    @Value("${jogadoresFile}")
+    private String caminho;
     private Path path;
     private List<Usuario> registroLinhas = new ArrayList<>();
 
     @PostConstruct
     public void init(){
-        path = Paths.get(caminho);
-    }
-
-    //Adiciona novo usuário
-    public void adicionar(Usuario usuario){
-        try (BufferedWriter bf = Files.newBufferedWriter(path, StandardOpenOption.APPEND)) {
-            bf.write(formatar(usuario));
-        } catch (IOException e) {
-            e.printStackTrace();
+        try {
+            path = Paths.get(caminho);
+            if (!path.toFile().exists()) {
+                Files.createFile(path);
+            }
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
         }
     }
 
-    //Transforma as linhas em Array para manipulação
     public void linhaEmUsuario() {
         try (Stream<String> streamLinhas = Files.lines(Path.of(caminho))) {
             registroLinhas = streamLinhas
@@ -51,29 +51,48 @@ public class UsuarioDaoImpl {
         }
     }
 
-    //Formato de gravação no arquivo
-    public String formatar(Usuario usuario) {
-        return String.format("%s,%s\r\n",usuario.getNome(),cript(usuario.getSenha()));
+    public void adicionar(Usuario usuario){
+        try (BufferedWriter bf = Files.newBufferedWriter(path, StandardOpenOption.APPEND)) {
+            bf.write(formatar(usuario));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    //Criptografa senha
+    public String formatar(Usuario usuario) {
+        return String.format("%s;%s\r%n",usuario.getLogin(),cript(usuario.getSenha()));
+    }
+
     public String cript(String senha){
         try {
             MessageDigest messageDigest = MessageDigest.getInstance("sha-1");
             messageDigest.reset();
-            final var plainPassword = senha;
-            messageDigest.update(plainPassword.getBytes(StandardCharsets.UTF_8));
-            final var crypto = new BigInteger(1, messageDigest.digest()).toString(16);
-            return crypto;
+            messageDigest.update(senha.getBytes(StandardCharsets.UTF_8));
+            return new BigInteger(1, messageDigest.digest()).toString(16);
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    //Pega todos os usuários
-    public List<Usuario> getAll() {
+    public boolean loginExist(String login){
         linhaEmUsuario();
-        return registroLinhas;
+        for (Usuario registroLinha: registroLinhas){
+            if(registroLinha.getLogin().equals(login)){
+                return true;
+            }
+        }
+        return false;
     }
+
+    public boolean validaUserPass(String login, String senha) {
+        linhaEmUsuario();
+        for (Usuario registroLinha : registroLinhas) {
+            if (registroLinha.getLogin().equals(login) && registroLinha.getSenha().equals(cript(senha))) {
+                    return true;
+                }
+            }
+        throw new UsuarioIncorretoException();
+    }
+
 }

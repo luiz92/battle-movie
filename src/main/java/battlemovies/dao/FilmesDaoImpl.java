@@ -1,8 +1,8 @@
 package battlemovies.dao;
 
 import battlemovies.modelo.Filmes;
-import org.springframework.stereotype.Component;
-
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Repository;
 import javax.annotation.PostConstruct;
 import java.io.File;
 import java.io.FileWriter;
@@ -18,57 +18,20 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Component
+@Repository
 public class FilmesDaoImpl {
-    private String caminho = "src\\main\\resources\\files\\filmes.csv";
-    private String caminho2 = "src\\main\\resources\\files\\filmesTemp.csv";
-    private List<Filmes> registroLinhas = new ArrayList<>();
-    private Filmes filme1, filme2;
+    @Value("${filmesFile}")
+    private String caminho;
+    @Value("${filmesTemp}")
+    private String caminho2;
     private Path path2;
+    private List<Filmes> registroLinhas = new ArrayList<>();
 
     @PostConstruct
     public void init(){
-        path2 = Paths.get(caminho2);
+            path2 = Paths.get(caminho2);
     }
 
-    //Gera dois filmes random envia para o GET e envia os dados para o metodo filmesJogadaAtual();
-    public List<Filmes> getBattleMovie(){
-        var filmes = getAll();
-        ArrayList<Filmes> battleMovie = new ArrayList();
-        Random random = new Random();
-        filme1 = filmes.get(random.nextInt(filmes.size()));
-        do {
-            filme2 = filmes.get(random.nextInt(filmes.size()));
-        }while (filme2 == filme1);
-        gravaArquivo(filme1, filme2);
-        battleMovie.add(filme1);
-        battleMovie.add(filme2);
-        return battleMovie;
-    }
-
-    //Grava os filmes da jogada atual em um csv para ser possível manipular os dados sem perder eles em novas solicitações
-    public List filmesJogadaAtual() {
-        try (Stream<String> streamLinhas = Files.lines(Path.of(caminho2))) {
-            registroLinhas = streamLinhas
-                    .filter(Predicate.not(String::isEmpty))
-                    .map(Filmes::new)
-                    .collect(Collectors.toList());
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return registroLinhas;
-    }
-
-    //Zera arquivo para evitar múltiplos jogos sem antes atualizar a "batalha"
-    public void fimDaJogada(){
-        try {
-            Files.newBufferedWriter(path2 , StandardOpenOption.TRUNCATE_EXISTING);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    //Transforma as linhas em Array para manipulação
     public void linhaEmFilme() {
         try (Stream<String> streamLinhas = Files.lines(Path.of(caminho))) {
             registroLinhas = streamLinhas
@@ -80,21 +43,55 @@ public class FilmesDaoImpl {
         }
     }
 
-    //Pega todos os filmes
     public List<Filmes> getAll() {
         linhaEmFilme();
         return registroLinhas;
     }
 
-    public void gravaArquivo(Filmes filme1, Filmes filme2){
+    public List<Filmes> getBattleMovie(){
+        Random random = new Random();
+        Filmes filme1;
+        Filmes filme2;
+        var filmesList = getAll();
+
+        filme1 = filmesList.get(random.nextInt(filmesList.size()));
+        do {
+            filme2 = filmesList.get(random.nextInt(filmesList.size()));
+        } while (filme2 == filme1);
+
+        gravaFilmesTemp(filme1, filme2);
+        return jogadaAtualList();
+    }
+
+    public void gravaFilmesTemp(Filmes filme1, Filmes filme2){
         var leArquivo = new File(caminho2);
         try{
             var arquivo = new FileWriter(leArquivo, false);
             arquivo.flush();
-            arquivo.write(String.valueOf(filme1.getId()+","+filme1.getNome()+","+filme1.getVotos()+","+filme1.getRating() +"\n"));
-            arquivo.write(String.valueOf(filme2.getId()+","+filme2.getNome()+","+filme2.getVotos()+","+filme2.getRating()+"\n"));
+            arquivo.write(filme1.getId() + "," + filme1.getNome() + "," + filme1.getVotos() + "," + filme1.getRating() + "\n");
+            arquivo.write(filme2.getId() + "," + filme2.getNome() + "," + filme2.getVotos() + "," + filme2.getRating() + "\n");
             arquivo.close();
             } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public List<Filmes> jogadaAtualList() {
+        try (Stream<String> streamLinhas = Files.lines(Path.of(caminho2))) {
+            registroLinhas = streamLinhas
+                    .filter(Predicate.not(String::isEmpty))
+                    .map(Filmes::new)
+                    .collect(Collectors.toList());
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return registroLinhas;
+    }
+
+    public void fimDaJogada(){
+        try {
+            Files.newBufferedWriter(path2 , StandardOpenOption.TRUNCATE_EXISTING);
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }

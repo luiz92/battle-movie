@@ -1,7 +1,8 @@
 package battlemovies.dao;
 
 import battlemovies.modelo.Jogos;
-import org.springframework.stereotype.Component;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Repository;
 import javax.annotation.PostConstruct;
 import java.io.BufferedWriter;
 import java.io.IOException;
@@ -15,21 +16,28 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-@Component
+@Repository
 public class JogosDaoImpl {
-    private String caminho = "src\\main\\resources\\files\\jogos.csv";
+    @Value("${jogosFile}")
+    private String caminho;
     private Path path;
     private List<Jogos> registroLinhas = new ArrayList<>();
 
     @PostConstruct
     public void init(){
-        path = Paths.get(caminho);
+        try {
+            path = Paths.get(caminho);
+            if (!path.toFile().exists()) {
+                Files.createFile(path);
+            }
+        } catch (IOException ioException) {
+            ioException.printStackTrace();
+        }
     }
 
-    //Atualiza a cada jogada do usuario
     public void atualizaJogo(Jogos jogador){
         linhaEmJogo();
-        if(validaUsuario(jogador.getLogin())) {
+        if(checkJogadorExist(jogador.getLogin())) {
             gravaJogos(jogador);
         } else {
             registroLinhas.add(jogador);
@@ -38,27 +46,8 @@ public class JogosDaoImpl {
 
     }
 
-    //Continua um jogo pendente do último usuario, até ele atingir 3 de vida
-    public Jogos continuaJogoPendente(String login){
-        linhaEmJogo();
-        for (Jogos registroLinha : registroLinhas) {
-            if (registroLinha.getLogin().equals(login)) {
-                return registroLinha;
-            }
-        }
-        return null;
-    }
 
-    //Zera o arquivo para um novo jogador
-    public void fimDeJogo(){
-        try {
-            Files.newBufferedWriter(path , StandardOpenOption.TRUNCATE_EXISTING);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
-    //Transforma as linhas em Array para manipulação
     public void linhaEmJogo() {
         try (Stream<String> streamLinhas = Files.lines(Path.of(caminho))) {
             registroLinhas = streamLinhas
@@ -70,8 +59,25 @@ public class JogosDaoImpl {
         }
     }
 
-    //Valida se é um usuário novo
-    public boolean validaUsuario(String login){
+    public Jogos jogoPendenteExist(String login){
+        linhaEmJogo();
+        for (Jogos jogador : registroLinhas) {
+            if (jogador.getLogin().equals(login)) {
+                return jogador;
+            }
+        }
+        return new Jogos();
+    }
+
+    public void fimDeJogo(){
+        try {
+            Files.newBufferedWriter(path , StandardOpenOption.TRUNCATE_EXISTING);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean checkJogadorExist(String login){
         linhaEmJogo();
         for (Jogos registroLinha : registroLinhas) {
             if (registroLinha.getLogin().equals(login)) {
@@ -81,7 +87,6 @@ public class JogosDaoImpl {
         return false;
     }
 
-    //Grava o jogo atualizado
     public void gravaJogos(Jogos jogador){
         try (BufferedWriter bf = Files.newBufferedWriter(path, StandardOpenOption.CREATE)) {
             bf.write(formatar(jogador));
@@ -90,8 +95,7 @@ public class JogosDaoImpl {
         }
     }
 
-    //Formato de gravação no arquivo
     public String formatar(Jogos jogador) {
-        return String.format("%s,%d,%d\r\n",jogador.getLogin(),jogador.getContador(),jogador.getJogadas());
+        return String.format("%s,%d,%d\r%n",jogador.getLogin(),jogador.getContador(),jogador.getJogadas());
     }
 }

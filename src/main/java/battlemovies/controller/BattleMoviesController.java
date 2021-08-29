@@ -1,11 +1,12 @@
 package battlemovies.controller;
 
-import battlemovies.dao.FilmesDaoImpl;
-import battlemovies.dao.RankingDaoImpl;
+import battlemovies.exceptions.DadosIncorretosException;
+import battlemovies.modelo.Jogada;
+import battlemovies.modelo.Ranking;
 import battlemovies.servicos.JogosServiceImpl;
+import battlemovies.servicos.RankingServiceImpl;
 import battlemovies.servicos.UsuarioServiceImpl;
-import com.fasterxml.jackson.databind.node.ObjectNode;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -15,55 +16,36 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
-@RequestMapping("/quizz")
+@RequiredArgsConstructor
 @RestController
+@RequestMapping("/quizz")
 public class BattleMoviesController {
+    private final RankingServiceImpl rankingService;
+    private final JogosServiceImpl jogosService;
+    private final UsuarioServiceImpl usuarioService;
 
-    @Autowired
-    private FilmesDaoImpl filmesDao;
-
-    @Autowired
-    private RankingDaoImpl rankingDao;
-
-    @Autowired
-    private JogosServiceImpl jogosService;
-
-    @Autowired
-    private UsuarioServiceImpl usuarioService;
-
-//    GET >  http://localhost:8080/quizz
     @GetMapping()
     public String exibirFilmes(){
         return jogosService.getTxtBattle();
     }
 
-//    GET > http://localhost:8080/quizz/battle
     @GetMapping("/battle")
     public String battle(){
         return jogosService.getTxtGameInfo();
     }
 
-//    GET >  http://localhost:8080/quizz/ranking
     @GetMapping("/ranking")
-    public List ranking(){
-        return rankingDao.linhaEmRanking();
+    public List<Ranking> ranking(){
+        return rankingService.exibirRanking();
     }
 
-//    POST >  http://localhost:8080/quizz
-//    body > raw > JSON > {"nome": "LuizAlves", "senha": "Senha123", "id": "tt1201607"}
-//    id é pego em GET > http://localhost:8080/quizz
-    @PostMapping
+    @PostMapping("/jogar")
     @ResponseStatus(HttpStatus.CREATED)
-    public String getJogadaUsuario(@RequestBody ObjectNode objectNode) {
-        String login = objectNode.get("nome").asText();
-        String senha = objectNode.get("senha").asText();
-        String id = objectNode.get("id").asText();
-        if(usuarioService.verificaExistenciaUsuario(login, senha)) {
-            if(jogosService.validaID(id)){
-                    return jogosService.validaMelhorFilme(login, id);
-            }
+    public String jogada(@RequestBody Jogada jogada) {
+        if(usuarioService.validaUserPass(jogada.getLogin(), jogada.getSenha())) {
+                    return jogosService.validaMelhorFilme(jogada);
         }
-        return "Dados incorretos!";
+        throw new DadosIncorretosException();
     }
 
 }

@@ -8,12 +8,12 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @Data
 public class Usuario {
-    private String nome;
+    private String login;
     private String senha;
 
     public Usuario(String txtLinhas) {
-        String[] split = txtLinhas.split(",");
-        this.nome = split[0];
+        String[] split = txtLinhas.split(";");
+        this.login = split[0];
         this.senha = split[1];
     }
 }

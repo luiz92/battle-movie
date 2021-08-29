@@ -3,20 +3,23 @@ package battlemovies.servicos;
 import battlemovies.dao.RankingDaoImpl;
 import battlemovies.modelo.Jogos;
 import battlemovies.modelo.Ranking;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import java.util.List;
 
-@Component
+@RequiredArgsConstructor
+@Service
 public class RankingServiceImpl {
+    private final RankingDaoImpl rankingDao;
 
-    @Autowired
-    private RankingDaoImpl rankingDao;
-
-    //No final das vidas do jogador, atribui os dados que serão utilizados no armazenamento
     public void novoRanking(Jogos jogador) {
         Ranking jogadorRankeado = new Ranking();
         jogadorRankeado.setNome(jogador.getLogin());
         jogadorRankeado.setPontuacao(jogador.getContador()*jogador.getJogadas());
         rankingDao.adicionar(jogadorRankeado);
+    }
+
+    public List<Ranking> exibirRanking() {
+        return rankingDao.linhaEmRanking();
     }
 }
