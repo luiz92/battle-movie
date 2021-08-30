@@ -29,7 +29,7 @@ public class BattleMoviesController {
         return jogosService.getTxtBattle();
     }
 
-    @GetMapping("/battle")
+    @GetMapping("/battleInfo")
     public String battle(){
         return jogosService.getTxtGameInfo();
     }
