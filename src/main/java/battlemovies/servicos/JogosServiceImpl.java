@@ -17,11 +17,11 @@ public class JogosServiceImpl {
     private final RankingServiceImpl rankingService;
 
     public String validaMelhorFilme(Jogada jogada) {
-        var filmesJogada = filmesDao.jogadaAtualList();
-        var jogador = jogosDao.jogoPendenteExist(jogada.getLogin());
+        var battleMovie = filmesDao.jogadaAtualList();
+        var jogador = jogosDao.getJogoPendente(jogada.getLogin());
         double pontoFilmeJogador = validaID(jogada.getIdFilme()).getVotos() / validaID(jogada.getIdFilme()).getRating();
 
-        for (Filmes filmes : filmesJogada) {
+        for (Filmes filmes : battleMovie) {
             double filme = filmes.getVotos() / filmes.getRating();
             jogador.setLogin(jogada.getLogin());
             if (pontoFilmeJogador > filme) {
@@ -30,7 +30,7 @@ public class JogosServiceImpl {
                 return jogadaErrada(jogador);
             }
         }
-        return null;
+        return "";
     }
 
     private String jogadaCorreta(Jogos jogador) {
@@ -54,12 +54,10 @@ public class JogosServiceImpl {
     }
 
     public Filmes validaID(String id) {
-        for (Filmes validaFilmeID : filmesDao.jogadaAtualList()) {
-            if (validaFilmeID.getId().equals(id)) {
-                return validaFilmeID;
-            }
-        }
-        throw new IdIncorretoException(id);
+        return filmesDao.jogadaAtualList().stream()
+                .filter(f -> f.getId().equals(id))
+                .findAny()
+                .orElseThrow(() -> new IdIncorretoException(id));
     }
 
     public String getTxtBattle(){

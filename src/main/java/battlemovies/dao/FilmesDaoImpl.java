@@ -68,8 +68,8 @@ public class FilmesDaoImpl {
         try{
             var arquivo = new FileWriter(leArquivo, false);
             arquivo.flush();
-            arquivo.write(filme1.getId() + "," + filme1.getNome() + "," + filme1.getVotos() + "," + filme1.getRating() + "\n");
-            arquivo.write(filme2.getId() + "," + filme2.getNome() + "," + filme2.getVotos() + "," + filme2.getRating() + "\n");
+            arquivo.write(filme1.getId()+","+filme1.getNome()+","+filme1.getVotos()+","+filme1.getRating()+"\n");
+            arquivo.write(filme2.getId()+","+filme2.getNome()+","+filme2.getVotos()+","+filme2.getRating()+"\n");
             arquivo.close();
             } catch (IOException e) {
             e.printStackTrace();

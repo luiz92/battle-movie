@@ -59,7 +59,7 @@ public class JogosDaoImpl {
         }
     }
 
-    public Jogos jogoPendenteExist(String login){
+    public Jogos getJogoPendente(String login){
         linhaEmJogo();
         for (Jogos jogador : registroLinhas) {
             if (jogador.getLogin().equals(login)) {
