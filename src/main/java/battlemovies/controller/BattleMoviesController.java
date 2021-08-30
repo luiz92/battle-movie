@@ -24,7 +24,7 @@ public class BattleMoviesController {
     private final JogosServiceImpl jogosService;
     private final UsuarioServiceImpl usuarioService;
 
-    @GetMapping()
+    @GetMapping("/battleMovie")
     public String exibirFilmes(){
         return jogosService.getTxtBattle();
     }
