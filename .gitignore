@@ -1,3 +1,7 @@
 /.idea
 /.target
 /target
+/src/main/resources/files/filmesTemp.csv
+/src/main/resources/files/jogadores.csv
+/src/main/resources/files/jogos.csv
+/src/main/resources/files/ranking.csv
